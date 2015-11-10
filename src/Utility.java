@@ -1,7 +1,9 @@
 /**
- * Created by wjrivera on 11/10/2015.
+ * Author:      7121
+ * Date:        11/10/15
+ * Class:       Operating Systems
+ * Purpose:     Utility class for Bankers Algorithm with Semaphores.
  */
-
 
 import java.util.*;
 import java.util.concurrent.*;
