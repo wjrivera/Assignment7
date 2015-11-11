@@ -4,5 +4,26 @@
  * Class:       Operating Systems
  * Purpose:     User class for Bankers Algorithm with Semaphores.
  */
-public class User {
+
+import java.util.Random;
+import java.util.concurrent.locks.Lock;
+
+public class User implements Runnable{
+
+    Banker banker;
+    Random rand = new Random();
+
+
+    //constructor
+    public User(Banker b){
+
+        this.banker = b;
+
+    }
+
+    @Override
+    public void run() {
+
+
+    }
 }
