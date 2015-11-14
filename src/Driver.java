@@ -5,16 +5,114 @@
  * Purpose:     Driver class for Bankers Algorithm with Semaphores.
  */
 
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+
 public class Driver {
 
-    public static void main(String args[]){
+    // Semaphore maintains a set of permits.
+    // Each acquire blocks if necessary until a permit is available, and then takes it.
+    // Each release adds a permit, potentially releasing a blocking acquirer.
+    static int n,m;
+    static Banker bankers;
+    static Semaphore mutex, user, banker;
+    public static Random s;
 
-        Banker banker = new Banker();
+    public static void main(String[] args) throws InterruptedException{
+        n = 5;
+        m = 5;
+        s = new Random();
+        mutex = new Semaphore(1, true);
+        banker = new Semaphore(1, true);
 
-        Thread userThread =  new Thread(new User(banker));
+        ExecutorService threadExecutor = Executors.newCachedThreadPool();
 
-        userThread.start();
+        //BarberShop class is instantiated for the customers to use
+        bankers = new Banker(m);
+
+        for(int i = 0; i < n; i++){
+
+            //Runs the thread Customer as a new instantiation a given amount of loop times
+            User user = new User(i, m, bankers);
+            threadExecutor.execute(user);
+
+        }
+
+        threadExecutor.execute(bankers);
+        threadExecutor.shutdown();
+        threadExecutor.awaitTermination(30, TimeUnit.SECONDS);
 
     }
 
+    //Methods for semaphores to use
+    public static void acquireMutex(){
+
+        try {
+
+            mutex.acquire();
+
+        }
+        catch (InterruptedException e) {
+
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+
+        }
+
+    }
+
+    public static void releaseMutex(){
+
+        mutex.release();
+
+    }
+
+    public static void acquireBanker(){
+
+        try {
+
+            banker.acquire();
+
+        }
+        catch (InterruptedException e) {
+
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+
+        }
+
+    }
+
+    public static void releaseBanker(){
+
+        banker.release();
+
+    }
+
+/*    public static void acquireUser(){
+
+    	try {
+
+			user.acquire();
+
+		}
+		catch (InterruptedException e) {
+
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+
+		}
+
+    }
+
+	public static void releaseUser(){
+
+		user.release();
+
+	}*/
+
 }
+
