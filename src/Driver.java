@@ -12,14 +12,12 @@ import java.util.concurrent.TimeUnit;
 
 public class Driver {
 
-    // Semaphore maintains a set of permits.
-    // Each acquire blocks if necessary until a permit is available, and then takes it.
-    // Each release adds a permit, potentially releasing a blocking acquirer.
     static int n,m;
     static Banker bankers;
-    static Semaphore mutex, user, banker;
+    static Semaphore mutex, banker;
 
     public static void main(String[] args) throws InterruptedException{
+
         n = 5;
         m = 5;
         mutex = new Semaphore(1, true);
@@ -27,20 +25,17 @@ public class Driver {
 
         ExecutorService threadExecutor = Executors.newCachedThreadPool();
 
-        //BarberShop class is instantiated for the customers to use
         bankers = new Banker(m);
 
         for(int i = 0; i < n; i++){
 
-            //Runs the thread Customer as a new instantiation a given amount of loop times
+            //Runs the number of customer threads
             User user = new User(i, m, bankers);
             threadExecutor.execute(user);
 
-
-
         }
-        System.out.println("Banker is running...");
 
+        System.out.println("Banker is running...");
 
         threadExecutor.execute(bankers);
         threadExecutor.shutdown();
@@ -94,26 +89,5 @@ public class Driver {
 
     }
 
-/*    public static void acquireUser(){
-
-    	try {
-
-			user.acquire();
-
-		}
-		catch (InterruptedException e) {
-
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-
-		}
-
-    }
-
-	public static void releaseUser(){
-
-		user.release();
-
-	}*/
 }
 

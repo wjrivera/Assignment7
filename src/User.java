@@ -26,7 +26,6 @@ public class User implements Runnable {
         user = new Semaphore(1, true);
         rand = new Random();
 
-
     }
 
     //Make need vector
@@ -54,6 +53,7 @@ public class User implements Runnable {
 
     }
 
+    //If all elements in the array are zeroes
     public boolean allZeroes(int[] needArray){
 
         int innerCounter = 0;
@@ -84,8 +84,6 @@ public class User implements Runnable {
     //Randomly create request submit vector
     public void makeRequest(){
 
-
-
         //Get Mutex, add array, release Mutex
         Driver.acquireMutex();
         Driver.acquireBanker();
@@ -99,14 +97,12 @@ public class User implements Runnable {
             //Substract from Need Vector
             substractNumbers();
             System.out.println("Thread " + id + " got " + Utility.arrayToString(request));
-            //System.out.println("Thread " + id + " Need Vector is " + Utility.arrayToString(needs));
 
             counter --;
 
         }
 
         System.out.println("****** Thread " + id + " completes ******");
-
 
         banker.request.add(request);
         Driver.releaseMutex();
@@ -123,12 +119,6 @@ public class User implements Runnable {
             e.printStackTrace();
 
         }
-
-
-        //System.out.println("Thread " + id + " Needs Vector " + Utility.arrayToString(needs));
-        //System.out.println("Thread " + id + " Request Vector " + Utility.arrayToString(request));
-        //System.out.println("Im waiting in thread " + id + " permits available are: " + user.availablePermits());
-
 
     }
     @Override
