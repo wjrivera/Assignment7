@@ -5,7 +5,6 @@
  * Purpose:     Driver class for Bankers Algorithm with Semaphores.
  */
 
-import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
@@ -19,12 +18,10 @@ public class Driver {
     static int n,m;
     static Banker bankers;
     static Semaphore mutex, user, banker;
-    public static Random s;
 
     public static void main(String[] args) throws InterruptedException{
         n = 5;
         m = 5;
-        s = new Random();
         mutex = new Semaphore(1, true);
         banker = new Semaphore(1, true);
 
@@ -39,7 +36,11 @@ public class Driver {
             User user = new User(i, m, bankers);
             threadExecutor.execute(user);
 
+
+
         }
+        System.out.println("Banker is running...");
+
 
         threadExecutor.execute(bankers);
         threadExecutor.shutdown();
@@ -47,7 +48,7 @@ public class Driver {
 
     }
 
-    //Methods for semaphores to use
+    //Get Mutex function
     public static void acquireMutex(){
 
         try {
@@ -64,6 +65,7 @@ public class Driver {
 
     }
 
+    //Release Mutex Function
     public static void releaseMutex(){
 
         mutex.release();
@@ -113,6 +115,5 @@ public class Driver {
 		user.release();
 
 	}*/
-
 }
 

@@ -5,6 +5,7 @@
  * Purpose:     User class for Bankers Algorithm with Semaphores.
  */
 
+import java.util.Random;
 import java.util.concurrent.Semaphore;
 
 public class User implements Runnable {
@@ -12,6 +13,8 @@ public class User implements Runnable {
     int needs[], request[], id;
     Banker banker;
     Semaphore user;
+    public static Random rand;
+    int counter = 5;
 
     //Constructor
     public User(int id, int m, Banker bankers){
@@ -21,25 +24,90 @@ public class User implements Runnable {
         banker = bankers;
         request = new int[m];
         user = new Semaphore(1, true);
+        rand = new Random();
+
+
     }
 
-    //Make vector
+    //Make need vector
     public void need(){
 
         for(int i = 0; i < needs.length; i++){
 
-            needs[i] = Driver.s.nextInt((100 - 1) + 1) - 1;
+            //Randomly create new vector
+            needs[i] = rand.nextInt(10);
 
         }
 
     }
 
+    //Substract Request Vector from Need Vector
+    public void substractNumbers(){
+
+        if(Utility.isZero(needs) == false) {
+
+            if (Utility.isLessThanOrEqualTo(request, needs)) {
+
+                Utility.subtract(needs, request);
+            }
+        }
+
+    }
+
+    public boolean allZeroes(int[] needArray){
+
+        int innerCounter = 0;
+
+        for(int i = 0; i < needArray.length; i++){
+
+            if(needArray[i] == 0){
+
+                innerCounter++;
+
+            }
+
+        }
+
+        if(innerCounter == needArray.length){
+
+            return true;
+
+        }
+        else{
+
+            return false;
+
+        }
+
+    }
+
+    //Randomly create request submit vector
     public void makeRequest(){
 
-        Utility.randomize(request, needs);
 
+
+        //Get Mutex, add array, release Mutex
         Driver.acquireMutex();
-        System.out.println("Thread "+id+" requested "+Utility.arrayToString(request));
+        Driver.acquireBanker();
+
+        while(allZeroes(needs) == false){
+
+            Utility.randomize(request, needs);
+
+            System.out.println("Thread " + id + " asks for " + Utility.arrayToString(request));
+
+            //Substract from Need Vector
+            substractNumbers();
+            System.out.println("Thread " + id + " got " + Utility.arrayToString(request));
+            //System.out.println("Thread " + id + " Need Vector is " + Utility.arrayToString(needs));
+
+            counter --;
+
+        }
+
+        System.out.println("****** Thread " + id + " completes ******");
+
+
         banker.request.add(request);
         Driver.releaseMutex();
         Driver.releaseBanker();
@@ -56,30 +124,26 @@ public class User implements Runnable {
 
         }
 
-        System.out.println("Im waiting in thread "+id+" permits available are: "+user.availablePermits());
+
+        //System.out.println("Thread " + id + " Needs Vector " + Utility.arrayToString(needs));
+        //System.out.println("Thread " + id + " Request Vector " + Utility.arrayToString(request));
+        //System.out.println("Im waiting in thread " + id + " permits available are: " + user.availablePermits());
 
 
     }
     @Override
     public void run() {
 
-        //First thing the user must do is add its self to the bankers thread list
-        Driver.acquireMutex();
+        //Get Mutex and Add to banker thread
+        Driver.acquireBanker();
         banker.threads.add(this);
-        Driver.releaseMutex();
-        int sa[] = new int[5];
-        for(int i = 0; i < 5; i++){
+        Driver.releaseBanker();
 
-            sa[i] = 2;
-
-        }
-        // Now the user must generate a need array and print out who he is and
-        // what it needs
+        // Make need vector array and print its contents
         need();
-        System.out.println("Thread "+ id +" begins to run and needs "+Utility.arrayToString(needs));
-        makeRequest();
+        System.out.println("Thread " + id + " begins to run and needs " + Utility.arrayToString(needs));
 
-        //Now we need to create a request until needs are not fullfilled
+        makeRequest();
 
     }
 
